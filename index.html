@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midi Player</title>
+    <script type='text/javascript' src='//www.midijs.net/lib/midi.js'></script>
+    <style>
+        body {
+            text-align: center;
+        }
+        
+        #messages {
+            list-style-type: none;
+            margin: 0 auto;
+            padding: 0;
+            height: 150px;
+            width: 80%;
+            border: 1px solid black;
+            overflow: scroll;
+        }
+        
+        #messages>li {
+            padding: 0.5rem 1rem;
+        }
+        
+        #messages>li:nth-child(odd) {
+            background: #efefef;
+        }
+        
+        .info {
+            width: 80%;
+            border: 1px solid black;
+            border-radius: 5px;
+            margin: 0 auto;
+        }
+        
+        #status {
+            color: green;
+        }
+        
+        #time {
+            color: blue;
+        }
+        
+        #message_count {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info">
+        <span id="status"></span>
+        <br>
+        <span>播放时间:</span><span id="time">0</span><span>s</span>
+        <br>
+        <span>消息 共</span><span id="message_count">0</span><span>条</span>
+        <div id="messages"></div>
+    </div>
+    <span>播放网址:</span>
+    <input type="url" value="http://127.0.0.1/source/example1.mid" placeholder="请输入网址" id="play_url">
+    <button onclick="MIDIjs.play(document.getElementById('play_url').value)">播放</button>
+    <button onclick="MIDIjs.pause();display_message('Song pause by user')">暂停</button>
+    <button onclick="MIDIjs.resume();display_message('Song resume by user')">继续</button>
+    <button onclick="MIDIjs.stop();display_message('Song stop by user')">停止</button>
+    <script>
+        var status_eletment = document.getElementById("status");
+        var time_eletment = document.getElementById("time");
+        var message_eletment = document.getElementById("messages");
+        var message_count_eletment = document.getElementById("message_count");
+
+        var log_count = 0;
+        // Define a function to handle status messages
+        function display_message(mes) {
+            log_count += 1;
+            var li = document.createElement("li");
+            li.innerHTML = mes;
+            message_eletment.appendChild(li);
+            message_eletment.scrollTop = 38 * log_count;
+            message_count_eletment.innerText = log_count.toString();
+        };
+
+        // Set the function as message callback
+        MIDIjs.message_callback = display_message;
+
+        function display_time(ev) {
+            // time in seconds, since start of playback
+            time_eletment.innerHTML = ev.time;
+        };
+        MIDIjs.player_callback = display_time;
+        setInterval(() => {
+            status_eletment.innerText = MIDIjs.get_audio_status();
+        }, 1000);
+    </script>
+</body>
+
+</html>
